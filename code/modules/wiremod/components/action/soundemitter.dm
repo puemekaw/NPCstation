@@ -74,7 +74,7 @@
 		"Flashbang" = 'sound/items/weapons/flashbang.ogg',
 		"Flash" = 'sound/items/weapons/flash.ogg',
 		"Whip" = 'sound/items/weapons/whip.ogg',
-		"Laugh Track" = 'sound/items/sitcom_laugh/sitcomLaugh1.ogg',
+		"Laugh Track" = 'sound/items/sitcom_laugh/SitcomLaugh1.ogg',
 		"Gavel" = 'sound/items/gavel.ogg',
 	)
 	sound_file = add_option_port("Sound Option", component_options)

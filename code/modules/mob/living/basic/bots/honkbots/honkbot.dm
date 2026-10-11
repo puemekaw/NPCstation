@@ -22,7 +22,7 @@
 		HONKBOT_VOICED_HONK_HAPPY = 'sound/items/bikehorn.ogg',
 		HONKBOT_VOICED_HONK_SAD = 'sound/misc/sadtrombone.ogg',
 	)
-	stun_sound = 'sound/items/airhorn/AirHorn.ogg'
+	stun_sound = 'sound/items/airhorn/airhorn.ogg'
 	baton_type = /obj/item/bikehorn/airhorn
 	cuff_type = /obj/item/restraints/handcuffs/cable/zipties/fake
 

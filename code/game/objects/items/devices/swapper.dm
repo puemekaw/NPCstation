@@ -92,8 +92,8 @@
 	var/target_A = container_A.drop_location()
 	var/target_B = container_B.drop_location()
 
-	playsound(target_A, 'sound/effects/swapper/swap_a.ogg', 30, TRUE)
-	playsound(target_B, 'sound/effects/swapper/swap_b.ogg', 30, TRUE)
+	playsound(target_A, 'sound/effects/swapper/swap_A.ogg', 30, TRUE)
+	playsound(target_B, 'sound/effects/swapper/swap_B.ogg', 30, TRUE)
 	if(do_teleport(container_A, target_B, channel = TELEPORT_CHANNEL_QUANTUM))
 		do_teleport(container_B, target_A, channel = TELEPORT_CHANNEL_QUANTUM)
 		if(ismob(container_B))

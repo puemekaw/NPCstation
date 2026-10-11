@@ -192,7 +192,7 @@
 	if(lattice)
 		qdel(lattice)
 	to_chat(user, span_notice("You reinforce the foamed plating with tiling."))
-	playsound(src, 'sound/items/weapons/Genhit.ogg', 50, TRUE)
+	playsound(src, 'sound/items/weapons/genhit.ogg', 50, TRUE)
 	ChangeTurf(/turf/open/floor/plating, flags = CHANGETURF_INHERIT_AIR)
 	return ITEM_INTERACT_SUCCESS
 
