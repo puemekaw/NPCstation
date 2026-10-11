@@ -11,7 +11,7 @@ Target development machine: RTX 4080 Super (16 GB VRAM), 64 GB system RAM.
 
 Build a locally hosted SS13 mode in which one player can perform an ordinary station job, command the station, or eventually play an antagonist among independent NPC crew. Crew must work with actual bodies, injuries, hands, inventories, access cards, machines, speech, and environmental hazards.
 
-The first complete playable target is a small station with eight NPCs and one player. Crew perform useful department work, exchange information, respond to incidents, and make mistakes that have understandable causes. Local language-model decisions are part of the early prototype.
+The first complete playable target is a small station with eight station NPCs, one or two mining crew, and one player. Crew perform useful department work, start and maintain critical infrastructure, sustain the station's resource supply, exchange information, respond to incidents, and make mistakes that have understandable causes. Local language-model decisions are part of the early prototype.
 
 Eight NPCs is a development and benchmarking target, not a verified performance limit. Model choice and crew size will follow measurements on the target machine.
 
@@ -187,6 +187,78 @@ Exit demo: tell the NPC to retrieve a visible wrench. It locates the item, walks
 
 Exit demo: the doctor responds to a medical request, reaches and scans the patient, performs suitable basic treatment, and accurately reports either the outcome or an obstacle. Advanced surgery and general critical-care competence are later capabilities.
 
+### M3B — Critical infrastructure and mining
+
+Critical station jobs are part of the first functional station target. Preconfigured power is a fixture for early body/model/medical tests; the playable mode must support NPC startup and ongoing operation.
+
+A job skill has preconditions, real actions, observable completion criteria, interruption handling, and recovery paths. The model chooses priorities and interprets exceptions; tested procedures handle routine startup. Use these procedures for repeatable work while retaining general actions for inspection and supported deviations.
+
+Start with one supported station layout. Define a map profile containing known work locations, operator-accessible controls, a verified startup recipe, and required tools/supplies. Resolve the actual installed machines at runtime and inspect their current state. Extend to other layouts through additional profiles and tests rather than assuming one universal SM configuration.
+
+#### Engineering: solars
+
+Procedure:
+1. Obtain appropriate space equipment, internals, tools, and cable.
+2. Reach the array, inspect panels/tracker, and complete or repair the required connections.
+3. Refresh the control's discovered devices and enable appropriate tracking.
+4. Configure the associated SMES charging/output through normal operator controls.
+5. Verify panel connectivity, tracking, measured generation under sunlight, storage behavior, and supply to the intended network.
+6. Continue inspections and create repair tasks when output deviates from the expected conditions.
+
+The [solar controller](https://github.com/puemekaw/NPCstation/blob/1568dbe1daeba67dc20939c6307d07522967e89c/code/modules/power/solar.dm) exposes connected panels, tracker presence, tracking state, supply, and capacity. Its refresh and automatic-tracking behavior provide concrete adapter points. [SMES](https://github.com/puemekaw/NPCstation/blob/1568dbe1daeba67dc20939c6307d07522967e89c/code/modules/power/smes.dm) supplies the storage side. NPCs must carry equipment and perform the physical work; completion is defined by the operating installation.
+
+Acceptance: from the selected map's normal round-start state, the engineer brings the array online without player assistance. A missing connection or tracker produces diagnosis, repair, or an accurate request for help. Zero generation during shadow is interpreted in context.
+
+#### Engineering: supermatter startup, watch, and faults
+
+Use a tested startup procedure for the selected engine layout:
+1. Inspect the installed cooling/exhaust system, control settings, coolant supply, and power equipment.
+2. Prepare and validate the coolant path before energizing the crystal.
+3. Configure pumps, filters, storage, and associated devices using the profile's verified settings.
+4. Enable emitters through their actual controls when the startup preconditions hold.
+5. Verify useful power production and acceptable integrity/operating trends over a test-defined observation window.
+6. Maintain an engine-watch task after startup and investigate alarms and deteriorating readings.
+
+The [SM monitor program](https://github.com/puemekaw/NPCstation/blob/1568dbe1daeba67dc20939c6307d07522967e89c/code/modules/modular_computers/file_system/programs/sm_monitor.dm) already uses [sm_ui_data](https://github.com/puemekaw/NPCstation/blob/1568dbe1daeba67dc20939c6307d07522967e89c/code/modules/power/supermatter/supermatter.dm) and delamination-alarm signals. Provide the NPC the readings obtainable through its actual monitor/device access. Additional loop information comes from inspected controls and gas-analysis equipment.
+
+Handle known faults first: disabled pump, missing coolant, broken connection, power loss, and supported contamination cases. A detected failure can interrupt startup, suppress further energization, prioritize corrective work, and request another engineer. Turning emitters off does not finish an SM emergency: maintaining/restoring cooling and verifying the subsequent trend remain tasks.
+
+Hold a shared engine-operation reservation so two engineers do not issue conflicting adjustments. One can operate the engine while another performs a requested repair or maintains solars. If the system is beyond supported recovery, crew issue warnings and coordinate evacuation.
+
+Acceptance: start the map's normal SM configuration through real controls, sustain it, and recover from selected injected faults. Report unsupported conditions accurately. Test startup with an absent dependency and interruption during a step; reconcile actual state before resuming.
+
+#### Mining: sustained resource work outside the player's view
+
+Provide an equipped shaft miner, a work mission, and an actual route between station and mining area:
+1. Check suit/internals, tools, weapon, scanner, medical supplies, and navigation beacons.
+2. Travel using the existing shuttle/elevator/transport mechanism for the selected map.
+3. Explore from known terrain, scan deposits, and choose extraction targets based on station demand.
+4. Extract resources using the fork's supported mechanics.
+5. Maintain the required navigation, retrieval, and processing route.
+6. Respond to fauna, storms, injury, equipment limits, and blocked routes; retreat or request help when appropriate.
+7. Return or arrange material delivery, replenish equipment, and repeat the mission.
+
+This baseline includes [ore vents](https://github.com/puemekaw/NPCstation/blob/1568dbe1daeba67dc20939c6307d07522967e89c/code/game/objects/structures/lavaland/vent_mining/ore_vent.dm), wave defense, [Candela navigation beacons](https://github.com/puemekaw/NPCstation/blob/1568dbe1daeba67dc20939c6307d07522967e89c/code/modules/mining/equipment/candela_network/candela_beacons.dm), and [boulder processing](https://github.com/puemekaw/NPCstation/blob/1568dbe1daeba67dc20939c6307d07522967e89c/code/modules/mining/boulder_processing/_boulder_processing.dm). Mining support must cover this current pipeline as applicable to the selected map; a generic rock-clicking loop is only an initial body/action exercise. Existing [Mook mining behaviors](https://github.com/puemekaw/NPCstation/blob/1568dbe1daeba67dc20939c6307d07522967e89c/code/modules/mob/living/basic/lavaland/mook/mook_bt.dm) provide patterns for deposits and storm retreat, not a complete human miner implementation.
+
+Ore-vent excavation currently includes a player TGUI confirmation. Add a validated clientless operation adapter by sharing the underlying operation with the player path, preserving scanner, proximity, eligibility, cooldown, and completion checks. Apply the same approach to supported computer controls: reuse bounded operator actions and their effects while preserving ordinary physical/access checks.
+
+The base controller can turn off off-station AI when no client is nearby. NPC mining crew need RUN_WHILE_UNWATCHED and appropriate priority handling in [the controller](https://github.com/puemekaw/NPCstation/blob/1568dbe1daeba67dc20939c6307d07522967e89c/code/datums/ai/_ai_controller.dm). Background work must continue when the player stays on station; combat and urgent danger need sufficiently responsive processing. Cross-z travel requires explicit transport steps, not just a pathfinding target on a different z-level.
+
+Acceptance: a miner carries out a supported mining expedition while the player stays on station; real materials reach the station's usable supply pipeline. A second test introduces a storm/injury or breaks a beacon connection and verifies retreat/recovery. Model delay must not suspend immediate combat or hazard responses.
+
+#### Other critical station services
+
+Define service tasks with explicit readiness/completion checks:
+- Medical: stocked working treatment capability, basic rescue, and a route to preparing or obtaining essential supplies.
+- Atmospherics/maintenance: supported air alarms, hull breaches, fire response, damaged wiring, APC/SMES faults, and supplies required for repairs.
+- Cargo: supply requests, credits/availability checks, receiving, and delivery to the requesting department.
+- Food: maintain a usable supply and replenish ingredients.
+- Command: assign unclaimed critical work, coordinate incident response, and invoke evacuation through supported controls.
+
+Track requested materials and spare parts so miners and cargo receive concrete demand from engineering, medical, and other departments. Release task reservations on failure, death, or loss of the assigned worker. NPCs should run startup work without an explicit player order when their department's readiness conditions are unmet.
+
+A complete playable milestone requires critical services and resource supply to function without the player personally starting each department. The initial eight station crew are a benchmark roster; add one or two miners and further specialists as the supported jobs and measured performance require.
+
 ### M4 — Coordination and individuality
 
 - Expand to two to four NPCs.
@@ -199,17 +271,17 @@ Exit: two doctors do not endlessly compete over the same task, an NPC can ask an
 
 ### M5 — Small playable station
 
-Initial roster: one captain, two engineers, one doctor, one security officer, one cargo technician, one cook, and one janitor.
+Initial station roster: one captain, two engineers, one doctor, one security officer, one cargo technician, one cook, and one janitor. Add one or two shaft miners for resource work, then additional specialists as necessary.
 
-Roll out useful job skills in this order: medical, janitorial work, basic maintenance, cargo delivery, limited cooking, security, and command. Every role begins with a narrow, reliable set of responsibilities.
+After the shared body/model interface, prioritize medical and engineering startup, followed by mining/resource supply, janitorial work, cargo delivery, cooking, security, and command. Every role begins with a narrow, reliable set of responsibilities, including the critical infrastructure and mining checks in M3B.
 
-Use an existing map for development; select or adapt a smaller station after the interaction loop is proven. Begin with a predefined working power configuration and supported maintenance faults. Crew startup routines can take on more infrastructure later.
+Use an existing map for development; select or adapt a smaller station after the interaction loop is proven. Preconfigured power is available for early controlled tests. The complete playable milestone starts from the supported map's ordinary infrastructure state and requires NPCs to bring its supported solars/SM and resource pipeline into operation.
 
 Add controlled incidents and eventual NPC antagonists. A traitor receives an explicit objective and acts through the same physical abilities and perception constraints. Security builds suspicion from evidence and reports.
 
 Audit Dynamic and event population assumptions: their normal counts refer to players, not this NPC roster. Add an explicit NPCstation crew/event policy instead of pretending NPCs are connected clients or blindly inserting them into player lists.
 
-Exit: play a complete shift with useful crew, an incident, coordination, and evacuation. Outcomes should follow the simulation rather than requiring the player to fix every department personally.
+Exit: play a complete shift with autonomous infrastructure startup, sustained material supply, useful crew, an incident, coordination, and evacuation. Outcomes should follow the simulation rather than requiring the player to fix every department personally.
 
 ### Later expansion
 
@@ -223,7 +295,7 @@ Start with a small number of simultaneous requests. Prioritize direct player int
 
 GPU memory must hold the model plus runtime/cache overhead; 64 GB system RAM is useful but does not add 64 GB of GPU memory. Prefer a model that fits comfortably on the GPU with the selected context and worker settings.
 
-Measure at one, two, four, and eight NPCs:
+Measure at one, two, four, and eight NPCs, then with the added mining crew:
 - Queue wait, inference time, and end-to-end decision latency, including p50 and p95.
 - Invalid, stale, and timed-out responses.
 - Actual task completion and recovery from failures.
@@ -261,16 +333,22 @@ Meaningful DM scenarios:
 - A late response attempting an obsolete or invalid action.
 - Actual medical scan/treatment outcomes and interrupted operations.
 - Two crew claiming one task; correct release and recovery.
+- Solar startup with a missing cable/tracker and generation changing with sunlight.
+- SM startup, interrupted configuration, selected cooling/power faults, and conflicting engineer requests.
+- A miner working off-station while unwatched, using actual transport, receiving hazard warnings, and maintaining material delivery.
+- Supported machine/vent operations invoked by a clientless NPC with ordinary eligibility checks.
 
 Bridge checks cover schema failures, unsupported commands, bounded context, request identity, timeouts, overload, and deterministic replay of action results. Live playtests assess whether the chosen model makes useful decisions; valid JSON alone does not establish NPC competence.
 
 Use bin/test.cmd for DM tests on Windows; use the supported build targets on other platforms. Preserve the inherited CI and coding conventions. A new bridge should have its own lightweight fixture checks without requiring live inference in CI.
 
-### First three implementation changes
+### First implementation changes
 
 1. Human controller and body/action test harness, including clientless hearing and lifecycle.
 2. Local bridge and asynchronous structured-action loop, with one assistant retrieval demo.
 3. Doctor actions and one complete patient-treatment scenario.
+4. Operator-control adapters and a checked solar startup procedure for one map.
+5. A verified SM startup/watch procedure and a mining expedition with material delivery.
 
 Each change should be independently reviewable and include its acceptance demonstration. Keep upstream merges deliberate during the prototype so integration failures remain attributable.
 
