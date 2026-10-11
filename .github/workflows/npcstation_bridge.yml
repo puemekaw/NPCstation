@@ -1,0 +1,27 @@
+name: NPCstation local bridge
+
+on:
+  pull_request:
+    paths:
+      - 'tools/npcstation_bridge/**'
+      - '.github/workflows/npcstation_bridge.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'tools/npcstation_bridge/**'
+      - '.github/workflows/npcstation_bridge.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  bridge_tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Test HTTP bridge and planners without a model
+        run: python -m unittest discover -s tools/npcstation_bridge -v
+

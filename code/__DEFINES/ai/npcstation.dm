@@ -1,0 +1,21 @@
+/// The bridge protocol is deliberately smaller than the game's input surface.
+#define NPCSTATION_PROTOCOL_VERSION 1
+#define NPCSTATION_ACT_MOVE "move_to"
+#define NPCSTATION_ACT_FOLLOW "follow"
+#define NPCSTATION_ACT_PICK_UP "pick_up"
+#define NPCSTATION_ACT_DROP "drop"
+#define NPCSTATION_ACT_SAY "say"
+#define NPCSTATION_ACT_INSPECT "inspect"
+#define NPCSTATION_ACT_WAIT "wait"
+#define NPCSTATION_ACT_STOP "stop"
+#define NPCSTATION_MAX_TARGETS 64
+#define NPCSTATION_MAX_VISIBLE 32
+#define NPCSTATION_MAX_EVENTS 8
+#define NPCSTATION_MAX_TEXT 240
+#define NPCSTATION_MEMORY_TIME (2 MINUTES)
+#define NPCSTATION_ACTION_TIMEOUT (30 SECONDS)
+#define NPCSTATION_FOLLOW_TIMEOUT (60 SECONDS)
+#define NPCSTATION_RETRY_DELAY (10 SECONDS)
+#define NPCSTATION_SUCCESS "success"
+#define NPCSTATION_FAILURE "failure"
+

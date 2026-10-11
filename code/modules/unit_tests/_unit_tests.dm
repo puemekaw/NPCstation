@@ -269,6 +269,7 @@
 #include "mutant_organs.dm"
 #include "neurine_trauma_cleanup.dm"
 #include "novaflower_burn.dm"
+#include "npcstation.dm"
 #include "nuke_cinematic.dm"
 #include "omnitools.dm"
 #include "operating_table.dm"

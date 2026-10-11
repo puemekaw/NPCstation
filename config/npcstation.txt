@@ -1,0 +1,10 @@
+# Experimental human NPC crew. Opt in by uncommenting the flag below.
+# NPCSTATION_ENABLED
+
+# The bridge only accepts a loopback HTTP origin. Run it on this same computer.
+NPCSTATION_BRIDGE_URL http://127.0.0.1:8088
+NPCSTATION_MAX_CREW 8
+NPCSTATION_MAX_REQUESTS 2
+# Seconds, not BYOND deciseconds. The bridge's inference timeout is 15 seconds.
+NPCSTATION_REQUEST_TIMEOUT 20
+
