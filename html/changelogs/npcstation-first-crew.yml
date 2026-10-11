@@ -1,0 +1,6 @@
+author: "puemekaw"
+delete-after: true
+changes:
+  - admin: "NPCstation can spawn experimental human NPC crew with normal job gear, IDs, and manifest records."
+  - server: "Opt-in NPC crew can use a local fake planner or Ollama bridge for addressed fetch and follow tasks."
+  - config: "Added disabled-by-default NPCstation settings in config/npcstation.txt."
